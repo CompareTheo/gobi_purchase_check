@@ -1,4 +1,5 @@
-![Alt text](https://github.com/MrJeremyHobbs/GobiChecker/blob/master/images/logo_large.png?raw=true "Title")
+# Credits
+GobiChecker is the orignal work of [Mr. Jeremy Hobbs](https://github.com/MrJeremyHobbs). The script hosted in this repository has been lightly edited for use at institutions which do not have a network zone (NZ) setup. See the original license (attached to this repository) for more information.
 # GobiChecker
 GobiChecker is a program that takes a brief export of Gobi requests and searches Alma for duplicates holdings in both the institution zone (IZ) and the network zone (NZ).  
 
@@ -16,6 +17,3 @@ Check the [releases](https://github.com/MrJeremyHobbs/GobiChecker/releases) tab 
 
 ## Documentation
 Documentation is included. You can also view it by clicking [here](https://github.com/MrJeremyHobbs/GobiChecker/blob/master/docs/GobiChecker_2_1.pdf).
-
-## Tutorial
-[![TUTORIAL](https://img.youtube.com/vi/_EktG7e3RbA/hqdefault.jpg)](https://www.youtube.com/watch?v=_EktG7e3RbA)
