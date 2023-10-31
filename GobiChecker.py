@@ -185,9 +185,9 @@ class gui:
                                                  relief="groove")
         self.run_button.pack(fill='both', side='left', expand=True)
         
-        self.save_img = PhotoImage(format = 'png', file= '.\images\save_icon.png')
+        #self.save_img = PhotoImage(format = 'png', file= '.\images\save_icon.png')
         self.save_button = Button(self.top_frame, text="SAVE LOG", 
-                                                  image=self.save_img, 
+                                                  #image=self.save_img, 
                                                   font="Arial 14", 
                                                   command=self.save_log_xlsx, 
                                                   relief="groove")
@@ -320,8 +320,7 @@ class gui:
         
         # headers
         headers = ["ISBN", "Title", "Author", "Publisher", "Date", "Binding", 
-                     "IZ-ISBN", "IZ-Title", "IZ-KW", "NZ-ISBN", "NZ-Title", 
-                     "NZ-KW", "Results"]
+                     "IZ-ISBN", "IZ-Title", "IZ-KW", "Results"]
         ws.append(headers)
         
         # rows
@@ -341,9 +340,6 @@ class gui:
         ws.column_dimensions['G'].width = "10"   # IZ-ISBN
         ws.column_dimensions['H'].width = "10"   # IS-Title
         ws.column_dimensions['I'].width = "10"   # IZ-KW
-        ws.column_dimensions['J'].width = "10"   # NZ-ISBN
-        ws.column_dimensions['K'].width = "10"   # NZ-Title
-        ws.column_dimensions['L'].width = "10"   # NZ-KW
         ws.column_dimensions['M'].width = "75"  # Results
         
         # freeze header
