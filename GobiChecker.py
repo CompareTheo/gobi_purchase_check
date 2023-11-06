@@ -163,8 +163,8 @@ class gui:
         
         master.title("GobiChecker "+config.version)
         master.resizable(0, 0)
-        master.minsize(width=1360, height=900)
-        master.maxsize(width=1360, height=900)
+        master.minsize(width=1200, height=900)
+        master.maxsize(width=1200, height=900)
         master.iconbitmap(".\images\logo_small.ico")
 
         # logo = PhotoImage(file=".\images\logo_large.png")
