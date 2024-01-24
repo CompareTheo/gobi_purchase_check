@@ -33,7 +33,7 @@ def main(*args):
         # initiate Gobi order line object
         order = gobi.parse_line(line)
         
-        # check for null lines and skipdddd
+        # check for null lines and skip
         if order.line_is_null == True:
             continue
             
@@ -92,6 +92,11 @@ def main(*args):
             combined_e_holdings = ", ".join(combined_e_holdings)
             have_e_holdings = "X"
         
+        # Intentional Duplicate
+        order_dupe_note_found = ""
+        if order.dupe_is_null == False:
+            order_dupe_note_found = "X"
+
         # _____________________ GENERATE OUTPUT ______________________________#
         results = ""
         tag = ""
@@ -108,7 +113,7 @@ def main(*args):
             results = "Duplicate-Title"
 
         if iz_kw_recs_found == "X":
-            tag = "duplicate"
+            tag = "error"
             results = "Duplicate-KW"
         
         if iz_isbn_recs_found == "X":
@@ -119,13 +124,17 @@ def main(*args):
             tag = "duplicate"
             results = f"Duplicate-Have Ebook ({combined_e_holdings})"
             
+        if order_dupe_note_found == "X":
+            tag = "intduplicate"
+            results = "OK to order"
+
         # insert results into gui
         gui.counter += 1
         increment = 100 / row_count
         gui.insert_text(gui.counter, (order.isbn, order.title, order.author, 
                           order.pub_short, order.pub_year, order.binding, 
                           iz_isbn_recs_found, iz_title_recs_found, 
-                          iz_kw_recs_found, results), tag)
+                          iz_kw_recs_found, order_dupe_note_found, results, order.selector), tag)
         gui.progress_bar.step(increment)
         continue
             
@@ -163,14 +172,14 @@ class gui:
         
         master.title("GobiChecker "+config.version)
         master.resizable(0, 0)
-        master.minsize(width=1200, height=900)
-        master.maxsize(width=1200, height=900)
+        master.minsize(width=1375, height=900)
+        master.maxsize(width=1375, height=900)
         master.iconbitmap(".\images\logo_small.ico")
 
-        # logo = PhotoImage(file=".\images\logo_large.png")
-        # self.logo = Label(image=logo)
-        # self.logo.image = logo
-        # self.logo.pack()
+        logo = PhotoImage(file=".\images\logo_large2.png")
+        self.logo = Label(image=logo)
+        self.logo.image = logo
+        self.logo.pack()
         
         # counter
         self.counter = -1
@@ -203,13 +212,13 @@ class gui:
         style.theme_use('clam')
         
         # binds
-        self.tree.bind('<Control-c>', self.copy_keyboard)
+        self.tree.bind('<Control-c>', self.copy_isbn_keyboard)
         self.tree.bind("<Button-3>", self.popup)
         
         # tree columns
         self.tree['columns'] = ('isbn', 'title', 'author', 'pub', 'pub_date', 
                                   'binding', 'iz_search_isbn', 
-                                  'iz_search_title', 'iz_search_kw', 'results')
+                                  'iz_search_title', 'iz_search_kw', 'intent_dupe', 'results', 'selector')
                                   
         self.tree.heading('#0', text='#', anchor='w')
         self.tree.heading('isbn', text='ISBN', anchor="w")
@@ -221,7 +230,9 @@ class gui:
         self.tree.heading('iz_search_isbn', text='IZ-ISBN', anchor="w")
         self.tree.heading('iz_search_title', text='IZ-Title', anchor="w")
         self.tree.heading('iz_search_kw', text='IZ-KW', anchor="w")
+        self.tree.heading('intent_dupe', text='Int. Dupe', anchor="w")
         self.tree.heading('results', text='Results', anchor="w")
+        self.tree.heading('selector', text='Selector', anchor="w")
         
         self.tree.column("#0", width=40)
         self.tree.column("isbn", width=90)
@@ -233,20 +244,23 @@ class gui:
         self.tree.column("iz_search_isbn", width=55, anchor="center")
         self.tree.column("iz_search_title", width=55, anchor="center")
         self.tree.column("iz_search_kw", width=55, anchor="center")
+        self.tree.column("intent_dupe", width=60, anchor="center")
         self.tree.column("results", width=363)
+        self.tree.column("selector", width=120)
         
         self.tree.pack(fill="both", expand=False, side="left")
         
         # scrollbar
         v_scrollbar = ttk.Scrollbar(self.mid_frame, orient="vertical", 
                                       command=self.tree.yview)
-        v_scrollbar.place(x=1346, y=26, height=376)
+        v_scrollbar.place(x=1375, y=26, height=376)
         self.tree.configure(yscrollcommand=v_scrollbar.set)
        
         # tags
-        self.tree.tag_configure('ok_to_order', background='white')
-        self.tree.tag_configure('duplicate', background='gold')
-        self.tree.tag_configure('error', background='pink')
+        self.tree.tag_configure('ok_to_order', background='#F2EDD5')
+        self.tree.tag_configure('intduplicate', background='#F2EDD5')
+        self.tree.tag_configure('duplicate', background='#A9DCE3')
+        self.tree.tag_configure('error', background='#E07F72')
        
         # progressbar
         style.configure("red.Horizontal.TProgressbar", foreground='red', 
@@ -259,7 +273,9 @@ class gui:
         
         self.popup_menu = Menu(master, tearoff=0)
         self.popup_menu.add_command(label="Copy ISBN",
-                                    command=self.copy_mouse)
+                                    command=self.copy_isbn_mouse)
+        self.popup_menu.add_command(label="Copy Title",
+                                    command=self.copy_title_mouse)
         
     def popup(self, event):
         iid = self.tree.identify_row(event.y)
@@ -269,20 +285,33 @@ class gui:
         else:
             pass
         
-    def copy_keyboard(self, event):
+    def copy_isbn_keyboard(self, event):
         curItem = self.tree.focus()
         item_dict = self.tree.item(curItem)
+        print(item_dict)
         isbn = item_dict['values'][0]
+        print(isbn)
         root.clipboard_clear()
         root.clipboard_append(isbn)
         
-    def copy_mouse(self):
+    def copy_isbn_mouse(self):
         curItem = self.tree.focus()
         item_dict = self.tree.item(curItem)
+        print(item_dict)
         isbn = item_dict['values'][0]
+        print(isbn)
         root.clipboard_clear()
         root.clipboard_append(isbn)
         
+    def copy_title_mouse(self):
+        curItem = self.tree.focus()
+        item_dict = self.tree.item(curItem)
+        print(item_dict)
+        title = item_dict['values'][1]
+        print(title)
+        root.clipboard_clear()
+        root.clipboard_append(title)
+
     def msgbox(self, msg):
         messagebox.showinfo("Attention", msg)
 
@@ -320,7 +349,7 @@ class gui:
         
         # headers
         headers = ["ISBN", "Title", "Author", "Publisher", "Date", "Binding", 
-                     "IZ-ISBN", "IZ-Title", "IZ-KW", "Results"]
+                     "IZ-ISBN", "IZ-Title", "IZ-KW", "Results", "Intentional Duplicate" "Selector"]
         ws.append(headers)
         
         # rows
@@ -341,6 +370,8 @@ class gui:
         ws.column_dimensions['H'].width = "10"   # IS-Title
         ws.column_dimensions['I'].width = "10"   # IZ-KW
         ws.column_dimensions['M'].width = "75"  # Results
+        ws.column_dimensions['N'].width = "10"  # Intentional Duplicate
+        ws.column_dimensions['O'].width = "40"  # Selector
         
         # freeze header
         a = ws['A2']

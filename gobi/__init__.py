@@ -62,3 +62,13 @@ class parse_line:
             
             # binding
             self.binding = fields[11]
+
+            # selector
+            self.selector = fields[167]
+
+            # duplication note
+            self.intdup = fields[170]
+            if not self.intdup or len(self.intdup.strip()) == 0:
+                self.dupe_is_null = True
+            else:
+                self.dupe_is_null = False
