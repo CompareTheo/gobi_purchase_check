@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from alma.elookup import temporary_collection_list
 import concurrent.futures
 import requests
 import xmltodict
@@ -7,6 +8,13 @@ __version__ = '0.1.2'
 __api_version__ = '1.2'
 
 # main class ##################################################################
+class CollectionCheck:
+    def __init__(self, temporary_collection_list):
+        self.temporary_collection_list = collection_list
+    
+    def check_collection(self, collection_id):
+        return collection_id in self.collection_list
+
 class SRU():
     def __init__(self, r, zone="", inst_code="", sru_path=""):
         self.zone = zone
@@ -171,3 +179,45 @@ def get_e_holdings(records, zone="", inst_code=""):
                         e_holdings.append(e_holdings_statement)
                 
     return e_holdings
+
+def check_temp(records, zone="", inst_code=""):
+    temp_holding = []
+    collection_checker = CollectionCheck(temporary_collection_list)
+    
+    # parse SRU response
+    for record in records:
+        try:
+            datafields = record['recordData']['record']['datafield']
+        except Exception as e:
+            #print(e)
+            datafields = records['recordData']['record']['datafield']
+            
+        for field in datafields:
+            code_e = ""
+            code_m = ""
+            code_c = ""
+        
+            # Check for electronic access
+            if field['@tag'] == "AVE":
+                for subfield in field['subfield']:
+                    if subfield['@code'] == '8':
+                        code_8 = subfield['#text']
+                    if subfield['@code'] == 'c':
+                        code_c = subfield['#text']
+                    if subfield['@code'] == 'e':
+                        code_e = subfield['#text']
+                    if subfield['@code'] == 'm':
+                        code_m = subfield['#text']
+                    if subfield['@code'] == 's':
+                        code_s = subfield['#text']
+                    if subfield['@code'] == 't':
+                        code_t = subfield['#text']
+            
+                # Check for e-holdings in IZ
+                if zone == "IZ" and code_e == "Available":
+                    if collection_checker.check_collection(code_c):
+                        temp_holding_statement = f"Temporary Collection ({code_m})"
+                        if temp_holding_statement not in temp_holding:
+                            temp_holding.append(temp_holding_statement)
+                
+    return temp_holding

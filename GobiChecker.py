@@ -172,11 +172,11 @@ class gui:
         
         master.title("GobiChecker "+config.version)
         master.resizable(0, 0)
-        master.minsize(width=1375, height=900)
-        master.maxsize(width=1375, height=900)
+        master.minsize(width=1370, height=900)
+        master.maxsize(width=1370, height=900)
         master.iconbitmap(".\images\logo_small.ico")
 
-        logo = PhotoImage(file=".\images\logo_large2.png")
+        logo = PhotoImage(file=".\images\logo.png")
         self.logo = Label(image=logo)
         self.logo.image = logo
         self.logo.pack()
@@ -259,7 +259,7 @@ class gui:
         # tags
         self.tree.tag_configure('ok_to_order', background='#F2EDD5')
         self.tree.tag_configure('intduplicate', background='#F2EDD5')
-        self.tree.tag_configure('duplicate', background='#A9DCE3')
+        self.tree.tag_configure('duplicate', background='#018099', foreground="#FFFFFF")
         self.tree.tag_configure('error', background='#E07F72')
        
         # progressbar
