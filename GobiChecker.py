@@ -5,6 +5,7 @@ from tkinter import filedialog
 from tkinter import ttk
 import configparser
 import openpyxl
+import os
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
 
@@ -97,6 +98,17 @@ def main(*args):
         if order.dupe_is_null == False:
             order_dupe_note_found = "X"
 
+        #Check for temporary collections
+        temp_collection_found = ""
+        if iz_isbn.numberOfRecords > 0:
+            temp_holdings = sru.check_temp(iz_isbn.records, zone="IZ", inst_code=config.inst_code)
+            if temp_holdings:
+                combined_temp_holdings = temp_holdings
+                for holding in combined_temp_holdings:
+                    combined_temp_holdings = [holding.replace(" ()", "") for holding in combined_temp_holdings]
+                combined_temp_holdings = ", ".join(combined_temp_holdings)
+                temp_collection_found = "X"
+
         # _____________________ GENERATE OUTPUT ______________________________#
         results = ""
         tag = ""
@@ -128,13 +140,17 @@ def main(*args):
             tag = "intduplicate"
             results = "OK to order"
 
+        if temp_collection_found == "X":
+            tag = "tempholding"
+            results = f"Temp. ({combined_temp_holdings})"
+
         # insert results into gui
         gui.counter += 1
         increment = 100 / row_count
-        gui.insert_text(gui.counter, (order.isbn, order.title, order.author, 
-                          order.pub_short, order.pub_year, order.binding, 
+        gui.insert_text(gui.counter, (order.isbn, order.title.title(), order.author.title(), 
+                          order.pub_year, order.binding, 
                           iz_isbn_recs_found, iz_title_recs_found, 
-                          iz_kw_recs_found, order_dupe_note_found, results, order.selector), tag)
+                          iz_kw_recs_found, order_dupe_note_found, temp_collection_found, results, order.selector), tag)
         gui.progress_bar.step(increment)
         continue
             
@@ -174,9 +190,12 @@ class gui:
         master.resizable(0, 0)
         master.minsize(width=1370, height=900)
         master.maxsize(width=1370, height=900)
-        master.iconbitmap(".\images\logo_small.ico")
+        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images", "logo_small.ico")
+        master.iconbitmap(icon_path)
 
-        logo = PhotoImage(file=".\images\logo.png")
+        # Logo image
+        logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images", "logo.png")
+        logo = PhotoImage(file=logo_path)
         self.logo = Label(image=logo)
         self.logo.image = logo
         self.logo.pack()
@@ -209,43 +228,43 @@ class gui:
         # tree view
         self.tree = ttk.Treeview(self.mid_frame)
         style = ttk.Style()
-        style.theme_use('clam')
+        style.theme_use('default')
         
         # binds
         self.tree.bind('<Control-c>', self.copy_isbn_keyboard)
         self.tree.bind("<Button-3>", self.popup)
         
         # tree columns
-        self.tree['columns'] = ('isbn', 'title', 'author', 'pub', 'pub_date', 
+        self.tree['columns'] = ('isbn', 'title', 'author', 'pub_date', 
                                   'binding', 'iz_search_isbn', 
-                                  'iz_search_title', 'iz_search_kw', 'intent_dupe', 'results', 'selector')
+                                  'iz_search_title', 'iz_search_kw', 'intent_dupe', 'temp_collection', 'results', 'selector')
                                   
         self.tree.heading('#0', text='#', anchor='w')
         self.tree.heading('isbn', text='ISBN', anchor="w")
         self.tree.heading('title', text='Title', anchor="w")
         self.tree.heading('author', text='Author', anchor="w")
-        self.tree.heading('pub', text='Publisher', anchor="w")
         self.tree.heading('pub_date', text='Date', anchor="w")
         self.tree.heading('binding', text='Binding', anchor="w")
         self.tree.heading('iz_search_isbn', text='IZ-ISBN', anchor="w")
         self.tree.heading('iz_search_title', text='IZ-Title', anchor="w")
         self.tree.heading('iz_search_kw', text='IZ-KW', anchor="w")
-        self.tree.heading('intent_dupe', text='Int. Dupe', anchor="w")
+        self.tree.heading('intent_dupe', text='Intent', anchor="w")
+        self.tree.heading('temp_collection', text="Temp.", anchor="w")
         self.tree.heading('results', text='Results', anchor="w")
         self.tree.heading('selector', text='Selector', anchor="w")
         
         self.tree.column("#0", width=40)
-        self.tree.column("isbn", width=90)
+        self.tree.column("isbn", width=105)
         self.tree.column("title", width=300)
-        self.tree.column("author", width=75)
-        self.tree.column("pub", width=60)
+        self.tree.column("author", width=85)
         self.tree.column("pub_date", width=50)
         self.tree.column("binding", width=50)
-        self.tree.column("iz_search_isbn", width=55, anchor="center")
-        self.tree.column("iz_search_title", width=55, anchor="center")
-        self.tree.column("iz_search_kw", width=55, anchor="center")
-        self.tree.column("intent_dupe", width=60, anchor="center")
-        self.tree.column("results", width=363)
+        self.tree.column("iz_search_isbn", width=50, anchor="center")
+        self.tree.column("iz_search_title", width=45, anchor="center")
+        self.tree.column("iz_search_kw", width=45, anchor="center")
+        self.tree.column("intent_dupe", width=40, anchor="center")
+        self.tree.column("temp_collection", width=40, anchor="center")
+        self.tree.column("results", width=403)
         self.tree.column("selector", width=120)
         
         self.tree.pack(fill="both", expand=False, side="left")
@@ -257,10 +276,11 @@ class gui:
         self.tree.configure(yscrollcommand=v_scrollbar.set)
        
         # tags
-        self.tree.tag_configure('ok_to_order', background='#F2EDD5')
-        self.tree.tag_configure('intduplicate', background='#F2EDD5')
-        self.tree.tag_configure('duplicate', background='#018099', foreground="#FFFFFF")
-        self.tree.tag_configure('error', background='#E07F72')
+        self.tree.tag_configure('ok_to_order')
+        self.tree.tag_configure('intduplicate')
+        self.tree.tag_configure('tempholding', background='#026873', foreground="#FFFFFF")
+        self.tree.tag_configure('duplicate', background='#024959', foreground="#FFFFFF")
+        self.tree.tag_configure('error', background='#8C3B4A', foreground="#FFFFFF")
        
         # progressbar
         style.configure("red.Horizontal.TProgressbar", foreground='red', 

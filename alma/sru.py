@@ -10,7 +10,7 @@ __api_version__ = '1.2'
 # main class ##################################################################
 class CollectionCheck:
     def __init__(self, temporary_collection_list):
-        self.temporary_collection_list = collection_list
+        self.collection_list = temporary_collection_list
     
     def check_collection(self, collection_id):
         return collection_id in self.collection_list
@@ -183,20 +183,19 @@ def get_e_holdings(records, zone="", inst_code=""):
 def check_temp(records, zone="", inst_code=""):
     temp_holding = []
     collection_checker = CollectionCheck(temporary_collection_list)
-    
+
     # parse SRU response
     for record in records:
         try:
             datafields = record['recordData']['record']['datafield']
         except Exception as e:
-            #print(e)
             datafields = records['recordData']['record']['datafield']
-            
+
         for field in datafields:
             code_e = ""
             code_m = ""
             code_c = ""
-        
+
             # Check for electronic access
             if field['@tag'] == "AVE":
                 for subfield in field['subfield']:
@@ -212,12 +211,17 @@ def check_temp(records, zone="", inst_code=""):
                         code_s = subfield['#text']
                     if subfield['@code'] == 't':
                         code_t = subfield['#text']
-            
+
                 # Check for e-holdings in IZ
-                if zone == "IZ" and code_e == "Available":
-                    if collection_checker.check_collection(code_c):
-                        temp_holding_statement = f"Temporary Collection ({code_m})"
-                        if temp_holding_statement not in temp_holding:
-                            temp_holding.append(temp_holding_statement)
-                
+                if zone == "IZ" and code_e == "Available" and code_c:
+                    try:
+                        code_c_int = int(code_c)
+                        if collection_checker.check_collection(code_c_int):
+                            temp_holding_statement = f"{code_m}"
+                            if temp_holding_statement not in temp_holding:
+                                temp_holding.append(temp_holding_statement)
+                    except ValueError:
+                        # Handle the case where code_c cannot be converted to an integer
+                        print(f"Invalid code_c: {code_c}")
+
     return temp_holding
