@@ -276,8 +276,8 @@ class gui:
         self.tree.configure(yscrollcommand=v_scrollbar.set)
        
         # tags
-        self.tree.tag_configure('ok_to_order')
-        self.tree.tag_configure('intduplicate')
+        self.tree.tag_configure('ok_to_order', background="#fdfcf3")
+        self.tree.tag_configure('intduplicate', background="#fdfcf3")
         self.tree.tag_configure('tempholding', background='#026873', foreground="#FFFFFF")
         self.tree.tag_configure('duplicate', background='#024959', foreground="#FFFFFF")
         self.tree.tag_configure('error', background='#8C3B4A', foreground="#FFFFFF")
