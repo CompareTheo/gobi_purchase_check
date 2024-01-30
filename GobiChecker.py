@@ -160,8 +160,6 @@ def main(*args):
     gobi_file.close()
 
 
-    
-    
 # Configurations ##############################################################
 class configs:
     def __init__(self, configfile):

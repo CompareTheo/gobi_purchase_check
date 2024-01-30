@@ -16,4 +16,5 @@ temporary_collection_list = [
     61201508600008066, #Knovel Environment
     61201508570008066, #Knovel Mechanics
     61201500510008066, #Academic Video Online
+    61201507190008066, #NutritionNetBase
 ]
