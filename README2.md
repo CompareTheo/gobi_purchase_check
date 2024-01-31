@@ -30,10 +30,11 @@ I wish to publicly express my gratitude to Jeremy for his invaluable contributio
 
 **gobi/__init__.py**
 
-    * Two additional parsing sections have been added:
-        * The first simply defines a variable for "selector," a GOBISMART custom field label that we require from selector/liaisons and output into the PO-Line. 
-        * The second defines a variable for "intentional duplicate" which is an additional GOBISMART custom field label that is notated by the Ordering Assistant to clarify to Gobi our desire to duplicate a previously purchased title.
+* Two additional parsing sections have been added:
+    1. The first simply defines a variable for "selector," a GOBISMART custom field label that we require from selector/liaisons and output into the PO-Line. 
+    2. The second defines a variable for "intentional duplicate" which is an additional GOBISMART custom field label that is notated by the Ordering Assistant to clarify to Gobi our desire to duplicate a previously purchased title.
 
 **alma/sru.py**
 
-    * A new import was called 
+    * A new import was module was imported which references a "elookup.py" file. This file is a list of Alma Electronic Collection IDs which correspond to collections of non-owned, temporary, or subscribed electronic portfolios.
+    * 
