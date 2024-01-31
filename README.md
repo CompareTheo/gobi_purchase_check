@@ -28,7 +28,7 @@ I wish to publicly express my gratitude to Jeremy for his invaluable contributio
 
 ## Change Log
 
-**The original GobiChecker project notes in its documentation that "currently GobiChecker is only for institutions with both an IZ and NZ." What has not been noted in detail in this change log is the work completed to establish compatibility for institutions with only and IZ. However, all other substantive changes are noted below.**
+The original GobiChecker project notes in its documentation that "currently GobiChecker is only for institutions with both an IZ and NZ." What has not been noted in detail in this change log is the work completed to establish compatibility for institutions with only an IZ. However, all other substantive changes are noted below.
 
 **gobi/__init__.py**
 
