@@ -2,7 +2,7 @@
 
 GobiChecker is a program that takes a brief export of Gobi requests and searches Alma for duplicate holdings in the institution zone (IZ).
 
-The scripts in this project are the original work of [Jermey Hobbs](https://github.com/MrJeremyHobbs). More details about the updates to the code found in this repository and statements about coding credit can be found in the acknowledgements section below. 
+The scripts in this project are the original work of [Jeremy Hobbs](https://github.com/MrJeremyHobbs). More details about the updates to the code found in this repository and statements about coding credit can be found in the acknowledgements section below. 
 
 ## Description
 GobiChecker is a program that takes a brief data export from Gobi and searches Alma for duplicate holdings in the institution zone (IZ). This program uses the Search/Retrieve via URL (SRU) protocol to query Alma using the alma.isbn (ISBN query), alma.title (Title query), and alma.all_for_ui (Keyword query) indexes. 
@@ -28,6 +28,8 @@ I wish to publicly express my gratitude to Jeremy for his invaluable contributio
 
 ## Change Log
 
+**The original GobiChecker project notes in its documentation that "currently GobiChecker is only for institutions with both an IZ and NZ." What has not been noted in detail in the change log below is the work completed to establish compatibility for institutions with only and IZ. However, all other substantive changes are noted below.**
+
 **gobi/__init__.py**
 
 Two additional parsing sections have been added:
@@ -38,13 +40,13 @@ Two additional parsing sections have been added:
 
 **alma/sru.py**
 
-* A new import was module was imported which references a "elookup.py" file. This file is a list of Alma Electronic Collection IDs which correspond to collections of non-owned, temporary, or subscribed electronic portfolios.
+* A new import module was imported which references an "elookup.py" file. This file is a list of Alma Electronic Collection IDs which correspond to collections of non-owned, temporary, or subscribed electronic portfolios.
 
 * A new class has been created called "CollectionCheck" which instantiates the necessary variables and functions needed to check the SRU's returned Electronic Collection ID (code_c) against the list of Electronic Collection IDs in elookup.py.
 
 * Roughly 10 lines relating to a check of e-holdings in the network zone were removed as we do not participate in an Alma consortium. 
 
-* An additional function was added to parse the SRU response, check for availability of electronic access, where an e-holding is found call CollectionCheck function on the Electronic Collection ID (code_c), and where a match is found return a temporary holding statement with the Electronic Collection Public Name (code_m).
+* An additional function was added to parse the SRU response, check for availability of electronic access, where an e-holding is found call the CollectionCheck function on the Electronic Collection ID (code_c), and where a match is found return a temporary holding statement with the Electronic Collection Public Name (code_m).
 
 **GobiChecker.py**
 
@@ -52,15 +54,15 @@ Two additional parsing sections have been added:
 
 * Several line references to the network zone, its needed queries, and parsed responses were removed.
 
-* Additional parsing logic was added to check for the existence of an "intentional duplicate" label in the gobi ordering duplicate note field.
+* Additional parsing logic was added to check for the existence of an "intentional duplicate" label in the gobi-ordering duplicate note field.
 
-* Parsing logic was also added to identify where the Electronic Collection ID found in the SRU e-holding parse statement matched against the list of temporary Electronic Collection IDs stored in the elookup.py document.
+* Parsing logic was also added to identify where the Electronic Collection ID, found in the SRU e-holding parse statement, matched against the list of temporary Electronic Collection IDs stored in the elookup.py document.
 
-* Several output tags and results were updated to align existing result outputs with our library's needs.
+* Several output tags and results were updated to align the existing result outputs with our library's needs.
 
 * Publisher and network zone match columns were removed as they are not needed in our workflow.
 
-* Several column result returns were reformatted to ensure "title" case upon runtime.
+* Several column result returns were reformatted to ensure the use of "title" case upon runtime.
 
 * The header logo was changed to better match the aesthetic of the university's other software packages.
 
@@ -68,4 +70,4 @@ Two additional parsing sections have been added:
 
 * Highlight colors were modified to match the software's new aesthetic.
 
-* Additional logic and menu item was added to allow for the "right-click" copy of both the selected title and ISBN.
+* Additional logic and menu items were added to allow for the "right-click" copy of the selected title and the selected ISBN.
