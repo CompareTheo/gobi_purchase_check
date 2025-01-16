@@ -160,7 +160,7 @@ def main(*args):
         gui.insert_text(gui.counter, (order.isbn, order.title.title(), order.author.title(), 
                           order.pub_year, order.binding, 
                           iz_isbn_recs_found, iz_title_recs_found, 
-                          iz_kw_recs_found, order_dupe_note_found, temp_collection_found, results, order.selector), tag)
+                          iz_kw_recs_found, order_dupe_note_found, results, order.selector), tag)
         gui.progress_bar.step(increment)
         continue
             
@@ -245,7 +245,7 @@ class gui:
         # tree columns
         self.tree['columns'] = ('isbn', 'title', 'author', 'pub_date', 
                                   'binding', 'iz_search_isbn', 
-                                  'iz_search_title', 'iz_search_kw', 'intent_dupe', 'temp_collection', 'results', 'selector')
+                                  'iz_search_title', 'iz_search_kw', 'intent_dupe', 'results', 'selector')
                                   
         self.tree.heading('#0', text='#', anchor='w')
         self.tree.heading('isbn', text='ISBN', anchor="w")
@@ -257,7 +257,6 @@ class gui:
         self.tree.heading('iz_search_title', text='IZ-Title', anchor="w")
         self.tree.heading('iz_search_kw', text='IZ-KW', anchor="w")
         self.tree.heading('intent_dupe', text='Intent', anchor="w")
-        self.tree.heading('temp_collection', text="Temp.", anchor="w")
         self.tree.heading('results', text='Results', anchor="w")
         self.tree.heading('selector', text='Selector', anchor="w")
         
@@ -271,7 +270,6 @@ class gui:
         self.tree.column("iz_search_title", width=45, anchor="center")
         self.tree.column("iz_search_kw", width=45, anchor="center")
         self.tree.column("intent_dupe", width=40, anchor="center")
-        self.tree.column("temp_collection", width=40, anchor="center")
         self.tree.column("results", width=403)
         self.tree.column("selector", width=120)
         
@@ -376,8 +374,8 @@ class gui:
         ws = wb.active
         
         # headers
-        headers = ["ISBN", "Title", "Author", "Publisher", "Date", "Binding", 
-                     "IZ-ISBN", "IZ-Title", "IZ-KW", "Results", "Intentional Duplicate" "Selector"]
+        headers = ["ISBN", "Title", "Author", "Pub. Year", "Binding", 
+                     "IZ-ISBN", "IZ-Title", "IZ-KW","Intent. Dupe.", "Results", "Selector"]
         ws.append(headers)
         
         # rows
@@ -391,15 +389,13 @@ class gui:
         ws.column_dimensions['A'].width = "20"   # isbn
         ws.column_dimensions['B'].width = "75"   # title
         ws.column_dimensions['C'].width = "40"   # author
-        ws.column_dimensions['D'].width = "20"   # publisher
-        ws.column_dimensions['E'].width = "15"   # date
-        ws.column_dimensions['F'].width = "15"   # date
-        ws.column_dimensions['G'].width = "10"   # IZ-ISBN
-        ws.column_dimensions['H'].width = "10"   # IS-Title
-        ws.column_dimensions['I'].width = "10"   # IZ-KW
-        ws.column_dimensions['M'].width = "75"  # Results
-        ws.column_dimensions['N'].width = "10"  # Intentional Duplicate
-        ws.column_dimensions['O'].width = "40"  # Selector
+        ws.column_dimensions['D'].width = "20"   # pub-year
+        ws.column_dimensions['E'].width = "15"   # binding
+        ws.column_dimensions['F'].width = "15"   # IZ-ISBN
+        ws.column_dimensions['G'].width = "10"   # IZ-Title
+        ws.column_dimensions['H'].width = "10"   # IZ-KW
+        ws.column_dimensions['I'].width = "10"   # intent-dup
+    
         
         # freeze header
         a = ws['A2']
