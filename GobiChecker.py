@@ -13,6 +13,16 @@ from openpyxl.styles import PatternFill, Font
 import gobi
 from alma import sru
 
+# path packaging for auto-py-to-exe
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+    # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 # main program ################################################################
 def resource_path(relative_path):
     """ Get the absolute path to the resource, works for dev and for PyInstaller """
@@ -177,17 +187,21 @@ class configs:
 
         c_dict = configparser.ConfigParser()
         c_dict.read(configfile)
-        
+
+        desktop_dir = os.path.join(os.path.expanduser("~"), "Desktop")
+
         self.version                 = c_dict['misc']['version']
 
-        self.download_directory      = c_dict['misc']['download_directory'] \
-                                           .replace('\\', '//')
+        self.download_directory      = os.path.join (desktop_dir, c_dict['misc']['download_directory'].replace('\\', '//'))
         
+        os.makedirs(self.download_directory, exist_ok=True)
+
         self.inst_code               = c_dict['SRU']['inst_code']
         self.iz_SRU_path             = c_dict['SRU']['iz_path']
         
-        self.log_directory           = c_dict['log']['log_directory'] \
-                                           .replace('\\', '//')
+        self.log_directory           = os.path.join(desktop_dir, c_dict['log']['log_directory'].replace('\\', '//'))
+
+        os.makedirs(self.log_directory, exist_ok=True)
 
 # Gui #########################################################################
 class gui:
@@ -419,7 +433,7 @@ class gui:
         
 
 # toplevel ####################################################################
-config = configs('config.ini')
+config = configs(os.path.join(os.path.dirname(__file__),'config.ini'))
 
 # gui
 root = Tk()
